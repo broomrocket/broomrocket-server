@@ -1,0 +1,6 @@
+# Spacy dependency. Do not change unless you are willing to fix workarounds for these specific versions!
+spacy==3.5.3
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl
+
+# SketchFab integration
+requests>2.27.1

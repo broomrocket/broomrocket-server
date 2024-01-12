@@ -144,24 +144,27 @@ The response is somewhat more complex:
 {
   "type": "response",
   "id": "opaque message ID here",
-  "data": [
-    {
-      "name": "mesh_name",
-      "size": {
-        "min_x": 0.0,
-        "max_x": 1.0,
-        "min_y": 0.0,
-        "max_y": 1.0,
-        "min_z": 0.0,
-        "max_z": 1.0
-      },
-      "translation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+  "data": {
+    "command": "list_objects",
+    "objects": [
+      {
+        "name": "mesh_name",
+        "size": {
+          "min_x": 0.0,
+          "max_x": 1.0,
+          "min_y": 0.0,
+          "max_y": 1.0,
+          "min_z": 0.0,
+          "max_z": 1.0
+        },
+        "translation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       }
-    }
-  ]
+    ]
+  }
 }
 ```
 
@@ -182,8 +185,8 @@ The request is as follows:
     "name": "new_mesh_name",
     "gltf": {
       "files": {
-        "data.gltf": "GLTF data here",
-        "license.txt": "License file here"
+        "data.gltf": "GLTF data here (base64-encoded)",
+        "license.txt": "License file here (base64-encoded)"
       },
       "gltf_file": "data.gltf",
       "license_file": "license.txt" // optional
@@ -199,19 +202,70 @@ The response is as follows:
   "type": "response",
   "id": "opaque message ID here",
   "data": {
-    "name": "new_mesh_name",
-    "size": {
-      "min_x": 0.0,
-      "max_x": 1.0,
-      "min_y": 0.0,
-      "max_y": 1.0,
-      "min_z": 0.0,
-      "max_z": 1.0
-    },
+    "command": "load_gltf",
+    "object": {
+      "name": "new_mesh_name",
+      "size": {
+        "min_x": 0.0,
+        "max_x": 1.0,
+        "min_y": 0.0,
+        "max_y": 1.0,
+        "min_z": 0.0,
+        "max_z": 1.0
+      },
+      "translation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  }
+}
+```
+
+#### Move mesh
+
+The server can request a mesh with a specific name to be moved.
+
+```json
+{
+  "type": "response",
+  "id": "opaque message ID here",
+  "data": {
+    "command": "move_mesh",
+    "name": "mesh_name",
     "translation": {
       "x": 0.0,
       "y": 0.0,
       "z": 0.0
+    }
+  }
+}
+```
+
+The response is as follows:
+
+```json
+{
+  "type": "response",
+  "id": "opaque message ID here",
+  "data": {
+    "command": "move_mesh",
+    "object": {
+      "name": "mesh_name",
+      "size": {
+        "min_x": 0.0,
+        "max_x": 1.0,
+        "min_y": 0.0,
+        "max_y": 1.0,
+        "min_z": 0.0,
+        "max_z": 1.0
+      },
+      "translation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
     }
   }
 }

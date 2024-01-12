@@ -11,6 +11,7 @@ __license__ = "MIT"
 __contact__ = "https://something.pink/contact/"
 
 import abc
+import base64
 import dataclasses
 import enum
 import glob
@@ -25,6 +26,7 @@ import urllib.parse
 from zipfile import ZipFile
 
 import requests
+import spacy
 
 
 # region Broomrocket core (common)
@@ -60,6 +62,13 @@ class Coordinate:
     def from_dict(cls, param):
         # TODO error handling
         return Coordinate(param["x"], param["y"], param["z"])
+
+    def to_dict(self) -> dict:
+        return {
+            "x": self.x,
+            "y": self.y,
+            "z": self.z
+        }
 
 
 @dataclasses.dataclass
@@ -315,8 +324,11 @@ class GLTF:
     license_file: typing.Optional[str] = None
 
     def to_dict(self) -> typing.Dict[str, typing.Any]:
+        files = {}
+        for key, value in self.files.items():
+            files[key] = base64.encodebytes(value).decode("utf-8")
         return {
-            "files": self.files,
+            "files": files,
             "gltf_file": self.gltf_file,
             "license_file": self.license_file,
         }
@@ -612,7 +624,7 @@ class SpatialReference:
             return self.distance * self._multipliers[self.units]
         except KeyError:
             raise BroomrocketException(False,
-                                f"Cannot find correct multiplier for distance unit {self.units}. Please state your distance units differently.")
+                                       f"Cannot find correct multiplier for distance unit {self.units}. Please state your distance units differently.")
 
 
 class Axis(enum.Enum):
@@ -1742,7 +1754,8 @@ class SpaCyNLPProvider(NLPProvider):
                             prevnum = 0
                             continue
                         else:
-                            raise BroomrocketException(False, "Could not understand your sentence, please try to rephrase it.")
+                            raise BroomrocketException(False,
+                                                       "Could not understand your sentence, please try to rephrase it.")
                 noun_found = True
                 if last_key is None:
                     if compound:
@@ -1783,9 +1796,9 @@ class SpacyNLPProviderUnitTest(unittest.TestCase):
     def test_sentences(self):
         test_sentences = {
             "Place 2 houses": NLPParseResult(
-               "place",
-               [NLPObjectToPlace("house", count=2)],
-               []
+                "place",
+                [NLPObjectToPlace("house", count=2)],
+                []
             ),
             "Add a flower pot 5 meters behind the pools": NLPParseResult(
                 "add",
@@ -2119,7 +2132,8 @@ class LocalMeshProvider(MeshProvider):
     def name() -> str:
         return "Local"
 
-    def find(self, parameters: typing.Dict[str, str], term: str, logger: BroomrocketLogger) -> typing.List[LoadableMesh]:
+    def find(self, parameters: typing.Dict[str, str], term: str, logger: BroomrocketLogger) -> typing.List[
+        LoadableMesh]:
         root = parameters["root"]
         try:
             files = list(map(lambda f: _LocalMesh(f), glob.glob(os.path.join(root, "**", "*.gltf"), recursive=True)))

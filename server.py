@@ -257,7 +257,6 @@ class ClientHandler(threading.Thread, MessageWriter, MessageReader):
             self.client_socket.close()
 
     def send(self, message):
-        print("<<<" + pprint.pformat(message))
         msg = json.dumps(message)
         self.client_socket.send(struct.pack("<l", len(msg)))
         self.client_socket.send(msg.encode())
@@ -273,7 +272,6 @@ class ClientHandler(threading.Thread, MessageWriter, MessageReader):
             message_data += self.client_socket.recv(message_length - len(message_data))
         print(message_data.decode())
         message = json.loads(message_data)
-        print(">>>" + pprint.pformat(message))
         return message
 
 
